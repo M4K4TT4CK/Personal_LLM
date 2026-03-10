@@ -152,7 +152,8 @@ That is it. You are running a local AI gateway.
 
 ## Handy commands
 
-**macOS / Linux:**
+These work the same on macOS, Linux, and Windows:
+
 ```bash
 # Watch logs in real time
 docker compose logs -f
@@ -162,22 +163,18 @@ docker compose exec openclaw openclaw gateway status
 
 # Stop everything
 docker compose down
+```
 
+The only one that differs is the data wipe, because file deletion syntax is different between shells:
+
+**macOS / Linux:**
+```bash
 # Nuclear option: wipes all data including your token, machines, and API keys. Cannot be undone.
 docker compose down && rm -rf ./data
 ```
 
 **Windows (PowerShell):**
 ```powershell
-# Watch logs in real time
-docker compose logs -f
-
-# Check gateway status
-docker compose exec openclaw openclaw gateway status
-
-# Stop everything
-docker compose down
-
 # Nuclear option: wipes all data including your token, machines, and API keys. Cannot be undone.
 docker compose down; Remove-Item -Recurse -Force .\data
 ```

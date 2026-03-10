@@ -4,29 +4,31 @@
 ![Docker](https://img.shields.io/badge/docker-required-2496ED?logo=docker&logoColor=white)
 ![License](https://img.shields.io/github/license/M4K4TT4CK/openclaw-quickstart)
 
-> A containerized [OpenClaw](https://openclaw.ai) setup designed to get you from zero to a running AI gateway with as little pain as possible. No prior Docker experience needed, no manual installs, no "works on my machine" nonsense.
+> Your own AI gateway, running on your own machine, with your own rules. No cloud accounts, no subscriptions, no "oops we read your data" fine print.
 >
-> If you can copy and paste, you can do this.
+> If you can open a terminal and paste a command, you can do this. Seriously.
 
 ---
 
-## What is this?
+## So what is this, exactly?
 
-[OpenClaw](https://openclaw.ai) is a self-hosted AI gateway. This repo wraps it in Docker so you can spin it up on any machine without touching your system Python, Node, or anything else. Your settings, token, and agent workspace all persist in a local `./data` folder that never touches git.
+[OpenClaw](https://openclaw.ai) is a self-hosted AI gateway. Think of it as the middleman between you and whatever AI provider you use (Anthropic, OpenAI, etc.), except this middleman lives on your computer and answers to you.
 
-Think of it as: **your AI, your machine, your rules.**
+This repo wraps OpenClaw in Docker so you can fire it up on any machine without touching your system Python, Node, or any of the other stuff that usually breaks when you try to install things. Your settings, your auth token, and your agent workspace all live in a local `./data` folder that never gets committed to git.
+
+**Your AI. Your machine. Your rules.**
 
 ---
 
-## Architecture
+## How it fits together
 
 ### System Layout
 
 ![System Architecture](./diagrams/architecture.png)
 
-> Source: [architecture.puml](./diagrams/architecture.puml). View or edit with the [PlantUML extension](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml) in VSCode.
+> Want to dig into the source? [architecture.puml](./diagrams/architecture.puml) can be viewed with the [PlantUML extension](https://marketplace.visualstudio.com/items?itemName=jebbs.plantuml) in VSCode.
 
-### Request Flow
+### What happens when you send a message
 
 ![Request Sequence](./diagrams/sequence.png)
 
@@ -34,26 +36,28 @@ Think of it as: **your AI, your machine, your rules.**
 
 ---
 
-## Requirements
+## Before you start
 
-Before you begin, make sure you have the following installed:
+You need three things. That is it.
 
-- **Docker Desktop** ([Download here](https://www.docker.com/products/docker-desktop/)). This includes both Docker and Docker Compose.
-- **An API key** from your preferred LLM provider (e.g. [Anthropic](https://console.anthropic.com/), [OpenAI](https://platform.openai.com/))
-- **Git** ([Download here](https://git-scm.com/downloads))
+- **Docker Desktop** ([grab it here](https://www.docker.com/products/docker-desktop/)). This bundles everything Docker, including Compose. One install, done.
+- **An API key** from whichever AI provider you prefer: [Anthropic](https://console.anthropic.com/) or [OpenAI](https://platform.openai.com/). You will add this through the UI later, not in any config file.
+- **Git** ([grab it here](https://git-scm.com/downloads)) so you can clone this repo.
 
-To verify Docker is installed, open a terminal and run:
+Quick sanity check. Open a terminal and run:
 ```bash
 docker --version
 ```
-You should see a version number. If not, install Docker Desktop first.
+If you see a version number, you are good. If not, install Docker Desktop first and come back.
 
-> **Windows:** Use PowerShell or Windows Terminal. Docker Desktop requires WSL2; the installer will guide you through enabling it.
-> **Linux:** Install [Docker Engine](https://docs.docker.com/engine/install/) and the Docker Compose plugin. Docker Desktop is optional.
+> **Windows users:** Use PowerShell or Windows Terminal. Docker Desktop needs WSL2; the installer walks you through it.
+> **Linux users:** Install [Docker Engine](https://docs.docker.com/engine/install/) and the [Compose plugin](https://docs.docker.com/compose/install/linux/). Docker Desktop is optional.
 
 ---
 
 ## Setup
+
+Six steps. Most of them are just copy and paste.
 
 ### 1. Clone the repo
 
@@ -69,36 +73,38 @@ git clone https://github.com/M4K4TT4CK/openclaw-quickstart.git
 cd openclaw-quickstart
 ```
 
-### 2. Build and start the container
+### 2. Fire it up
 
 ```bash
 docker compose up -d
 ```
 
-This builds the Docker image (takes a few minutes the first time) and starts the container in the background. Grab a coffee.
+This builds the Docker image and starts the container in the background. The first build takes a few minutes since it has to pull the base image and install dependencies. Perfect time for a coffee.
 
-> **Note:** This uses `docker compose` (no hyphen), which is Docker Compose V2 and comes bundled with Docker Desktop on macOS and Windows. On Linux, install the [Compose plugin](https://docs.docker.com/compose/install/linux/). If you only have the older `docker-compose` (with hyphen), [upgrade to V2](https://docs.docker.com/compose/migrate/).
+> **Heads up:** This uses `docker compose` (no hyphen), which is Docker Compose V2. It ships with Docker Desktop on macOS and Windows. Linux users, grab the [Compose plugin](https://docs.docker.com/compose/install/linux/) if you do not have it. Still on the old `docker-compose`? Time to [upgrade](https://docs.docker.com/compose/migrate/).
 
-To check it started successfully:
+Once it is running, confirm it started cleanly:
 ```bash
 docker compose logs
 ```
 
-You should see a line like:
+You want to see something like:
 ```
 [gateway] listening on ws://0.0.0.0:18789
 ```
 
 ### 3. Open the Control UI
 
-Open your browser and go to:
+Pop open your browser and head to:
 ```
 http://127.0.0.1:18789
 ```
 
-### 4. Get your auth token
+You will hit a connection screen. That is normal. You need your token first.
 
-The gateway generates a unique token on first run and requires it to connect. Retrieve it:
+### 4. Grab your auth token
+
+The gateway generates a unique token the first time it runs. No two installs share a token, and it is never stored in this repo. To retrieve yours:
 
 **macOS / Linux:**
 ```bash
@@ -110,75 +116,77 @@ docker compose exec openclaw cat /data/config/openclaw.json
 docker compose exec openclaw cat /data/config/openclaw.json
 ```
 
-Look for the `"token"` field in the output, e.g.:
+Dig out the `"token"` field from the output:
 ```json
 "token": "abc123yourtokenhere"
 ```
 
-Open the Control UI with your token in the URL:
+Now load the Control UI with your token in the URL:
 ```
 http://127.0.0.1:18789/?auth=abc123yourtokenhere
 ```
 
 ### 5. Approve the device pairing
 
-The first time you connect, the UI will show a **pairing required** screen. This is by design; it stops anything other than your approved browser from connecting.
+First time through, the UI shows a **pairing required** screen. This is intentional. It means nothing can connect to your gateway without your explicit approval, not even your own browser until you say so.
 
-These commands run inside the container, so they are the same on macOS, Windows, and Linux:
+Run these from your terminal (same on macOS, Windows, and Linux since they run inside the container):
 
 ```bash
 # See what is waiting for approval
 docker compose exec openclaw openclaw devices list
 
-# Approve it (replace <requestId> with the ID shown above)
+# Approve it (swap <requestId> for the ID shown above)
 docker compose exec openclaw openclaw devices approve <requestId>
 ```
 
-Go back to the browser; you should now be connected.
+Flip back to the browser. You should now be in.
 
 ### 6. Add your API key
 
-In the Control UI, go to **Settings** and add your LLM provider API key (e.g. Anthropic or OpenAI). This is required before you can chat. Your key is stored locally in `./data` and never committed to git.
+In the Control UI, go to **Settings** and drop in your LLM provider API key (Anthropic or OpenAI). You cannot chat until this is done. Your key lives in `./data` on your machine and never touches git.
+
+That is it. You are running a local AI gateway.
 
 ---
 
-## Useful Commands
+## Handy commands
 
 **macOS / Linux:**
 ```bash
-# View live logs
+# Watch logs in real time
 docker compose logs -f
 
 # Check gateway status
 docker compose exec openclaw openclaw gateway status
 
-# Stop the container
+# Stop everything
 docker compose down
 
-# WARNING: deletes all data including machines, API keys, and token. Cannot be undone.
+# Nuclear option: wipes all data including your token, machines, and API keys. Cannot be undone.
 docker compose down && rm -rf ./data
 ```
 
 **Windows (PowerShell):**
 ```powershell
-# View live logs
+# Watch logs in real time
 docker compose logs -f
 
 # Check gateway status
 docker compose exec openclaw openclaw gateway status
 
-# Stop the container
+# Stop everything
 docker compose down
 
-# WARNING: deletes all data including machines, API keys, and token. Cannot be undone.
+# Nuclear option: wipes all data including your token, machines, and API keys. Cannot be undone.
 docker compose down; Remove-Item -Recurse -Force .\data
 ```
 
 ---
 
-## Configuration
+## Where does everything live?
 
-Everything persists in `./data` on your machine. It survives container restarts and rebuilds. The only thing that wipes it is the nuclear command above.
+Everything that matters persists in `./data` on your machine. Container restarts, rebuilds, even pulling a new version, none of that touches your data. The only thing that wipes it is the nuclear command above.
 
 ```
 ./data/
@@ -187,9 +195,9 @@ Everything persists in `./data` on your machine. It survives container restarts 
   workspace/             agent files (AGENTS.md, SOUL.md, MEMORY.md...)
 ```
 
-> **Security note:** The gateway port (18789) is bound to `127.0.0.1` only; it is accessible from your machine alone, not from other devices on your network or the internet. Each user who builds this gets their own unique auth token generated locally; no tokens are stored in this repo. The `dangerouslyAllowHostHeaderOriginFallback` flag is required to make the Control UI work inside Docker and is safe as long as the port is not publicly exposed.
+> **Security note:** Port 18789 is bound to `127.0.0.1` only. That means it is reachable from your machine and nowhere else. No other device on your network can hit it, and neither can the internet. The `dangerouslyAllowHostHeaderOriginFallback` flag sounds scary but is safe here since the port is never publicly exposed; it is required to make the Control UI work inside Docker.
 
-Override data locations via environment variables in `docker-compose.yml`:
+Want to move the data somewhere else? Override the paths in `docker-compose.yml`:
 
 | Variable | Default |
 |---|---|

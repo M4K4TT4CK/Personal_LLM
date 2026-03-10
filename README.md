@@ -104,15 +104,9 @@ You will hit a connection screen. That is normal. You need your token first.
 
 ### 4. Grab your auth token
 
-The gateway generates a unique token the first time it runs. No two installs share a token, and it is never stored in this repo. To retrieve yours:
+The gateway generates a unique token the first time it runs. No two installs share a token, and it is never stored in this repo. To retrieve yours (same command on macOS, Linux, and Windows since it runs inside the container):
 
-**macOS / Linux:**
 ```bash
-docker compose exec openclaw cat /data/config/openclaw.json
-```
-
-**Windows (PowerShell):**
-```powershell
 docker compose exec openclaw cat /data/config/openclaw.json
 ```
 

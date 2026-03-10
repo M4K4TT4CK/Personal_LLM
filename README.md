@@ -1,6 +1,8 @@
-# OpenClaw
+# OpenClaw Quickstart
 
-Personal LLM build powered by [OpenClaw](https://openclaw.ai). Runs a self-hosted AI gateway with a browser-based Control UI, fully containerized with Docker.
+A containerized [OpenClaw](https://openclaw.ai) setup designed to get you from zero to a running AI gateway with as little pain as possible. No prior Docker experience needed, no manual installs, no "works on my machine" nonsense.
+
+If you can copy and paste, you can do this.
 
 > **Primary platform:** macOS. Windows and Linux notes are included where the steps differ.
 
@@ -31,13 +33,13 @@ You should see a version number. If not, install Docker Desktop first.
 
 **macOS / Linux:**
 ```bash
-git clone https://github.com/your-username/OpenClaw.git
+git clone https://github.com/M4K4TT4CK/openclaw-quickstart.git
 cd OpenClaw
 ```
 
 **Windows (PowerShell):**
 ```powershell
-git clone https://github.com/your-username/OpenClaw.git
+git clone https://github.com/M4K4TT4CK/openclaw-quickstart.git
 cd OpenClaw
 ```
 

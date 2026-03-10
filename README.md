@@ -1,34 +1,101 @@
 # OpenClaw
 
-Personal LLM build powered by [OpenClaw](https://openclaw.ai). Runs a self-hosted AI gateway with a browser-based Control UI.
+Personal LLM build powered by [OpenClaw](https://openclaw.ai). Runs a self-hosted AI gateway with a browser-based Control UI, fully containerized with Docker.
+
+---
 
 ## Requirements
 
-- Docker and Docker Compose
-- An API key for your preferred LLM provider (e.g. Anthropic, OpenAI)
+Before you begin, make sure you have the following installed:
 
-## Quick Start
+- **Docker Desktop** — [Download here](https://www.docker.com/products/docker-desktop/). This includes both Docker and Docker Compose.
+- **An API key** from your preferred LLM provider (e.g. [Anthropic](https://console.anthropic.com/), [OpenAI](https://platform.openai.com/))
+
+To verify Docker is installed, open a terminal and run:
+```bash
+docker --version
+```
+You should see a version number. If not, install Docker Desktop first.
+
+---
+
+## Setup
+
+### 1. Clone the repo
+
+Open a terminal and run:
 
 ```bash
-# 1. Clone the repo
 git clone https://github.com/your-username/OpenClaw.git
 cd OpenClaw
-
-# 2. Build and start the container
-docker compose up -d
-
-# 3. Open the Control UI to complete setup
-open http://127.0.0.1:18789
 ```
 
-> The gateway starts in `--allow-unconfigured` mode so the container runs before any config is set. Complete setup — including adding your API key — via the Control UI at the URL above.
+### 2. Build and start the container
 
-> Each user brings their own API key. No secrets are stored in this repo.
+```bash
+docker compose up -d
+```
+
+This will build the Docker image (takes a few minutes the first time) and start the container in the background.
+
+To check it started successfully:
+```bash
+docker compose logs
+```
+
+You should see a line like:
+```
+[gateway] listening on ws://0.0.0.0:18789
+```
+
+### 3. Open the Control UI
+
+Open your browser and go to:
+```
+http://127.0.0.1:18789
+```
+
+### 4. Get your auth token
+
+The gateway requires a token to connect. Retrieve it by running:
+```bash
+docker compose exec openclaw cat /data/config/openclaw.json
+```
+
+Look for the `"token"` field in the output, e.g.:
+```json
+"token": "abc123yourtokenhere"
+```
+
+Open the Control UI with your token in the URL:
+```
+http://127.0.0.1:18789/?auth=abc123yourtokenhere
+```
+
+### 5. Approve the device pairing
+
+The first time you connect, the UI will show a **pairing required** screen. Run these two commands in your terminal:
+
+```bash
+# List pending pairing requests and copy the ID shown
+docker compose exec openclaw openclaw devices list
+
+# Approve the request (replace <requestId> with the ID from above)
+docker compose exec openclaw openclaw devices approve <requestId>
+```
+
+Go back to the browser — you should now be connected.
+
+### 6. Add your API key
+
+In the Control UI, go to **Settings** and add your LLM provider API key (e.g. your Anthropic or OpenAI key). This is required before you can chat.
+
+---
 
 ## Useful Commands
 
 ```bash
-# View logs
+# View live logs
 docker compose logs -f
 
 # Check gateway status
@@ -36,13 +103,20 @@ docker compose exec openclaw openclaw gateway status
 
 # Stop the container
 docker compose down
+
+# Stop and delete all data (start fresh)
+docker compose down -v
 ```
+
+---
 
 ## Configuration
 
-State and config are persisted in a Docker volume (`openclaw-data`) so your setup survives container restarts and rebuilds.
+State and config are persisted in a Docker volume (`openclaw-data`) so your setup — including your auth token and API keys — survives container restarts and rebuilds. You will only need to pair your device once.
 
-Override locations via environment variables in `docker-compose.yml`:
+> **Security note:** The gateway port (18789) is bound to `127.0.0.1` only, meaning it is accessible from your machine alone — not from other devices on your network or the internet. Each user who builds this gets their own unique auth token generated locally; no tokens are stored in this repo. The `dangerouslyAllowHostHeaderOriginFallback` flag is required to make the Control UI work inside Docker and is safe as long as the port is not publicly exposed.
+
+Override data locations via environment variables in `docker-compose.yml`:
 
 | Variable | Default |
 |---|---|

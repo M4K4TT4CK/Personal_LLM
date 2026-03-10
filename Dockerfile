@@ -19,4 +19,7 @@ EXPOSE 18789
 # Persist state and config outside the container
 VOLUME ["/data"]
 
-CMD ["openclaw", "gateway", "run", "--allow-unconfigured"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]

@@ -8,7 +8,7 @@ Personal LLM build powered by [OpenClaw](https://openclaw.ai). Runs a self-hoste
 
 Before you begin, make sure you have the following installed:
 
-- **Docker Desktop** — [Download here](https://www.docker.com/products/docker-desktop/). This includes both Docker and Docker Compose.
+- **Docker Desktop** ([Download here](https://www.docker.com/products/docker-desktop/)). This includes both Docker and Docker Compose.
 - **An API key** from your preferred LLM provider (e.g. [Anthropic](https://console.anthropic.com/), [OpenAI](https://platform.openai.com/))
 
 To verify Docker is installed, open a terminal and run:
@@ -84,7 +84,7 @@ docker compose exec openclaw openclaw devices list
 docker compose exec openclaw openclaw devices approve <requestId>
 ```
 
-Go back to the browser — you should now be connected.
+Go back to the browser; you should now be connected.
 
 ### 6. Add your API key
 
@@ -104,17 +104,17 @@ docker compose exec openclaw openclaw gateway status
 # Stop the container
 docker compose down
 
-# Stop and delete all data (start fresh)
-docker compose down -v
+# WARNING: deletes all data including machines, API keys, and token. Cannot be undone.
+docker compose down && rm -rf ./data
 ```
 
 ---
 
 ## Configuration
 
-State and config are persisted in a Docker volume (`openclaw-data`) so your setup — including your auth token and API keys — survives container restarts and rebuilds. You will only need to pair your device once.
+State and config are persisted in the `./data` folder so your setup, including your auth token and API keys, survives container restarts and rebuilds. You will only need to pair your device once.
 
-> **Security note:** The gateway port (18789) is bound to `127.0.0.1` only, meaning it is accessible from your machine alone — not from other devices on your network or the internet. Each user who builds this gets their own unique auth token generated locally; no tokens are stored in this repo. The `dangerouslyAllowHostHeaderOriginFallback` flag is required to make the Control UI work inside Docker and is safe as long as the port is not publicly exposed.
+> **Security note:** The gateway port (18789) is bound to `127.0.0.1` only; it is accessible from your machine alone, not from other devices on your network or the internet. Each user who builds this gets their own unique auth token generated locally; no tokens are stored in this repo. The `dangerouslyAllowHostHeaderOriginFallback` flag is required to make the Control UI work inside Docker and is safe as long as the port is not publicly exposed.
 
 Override data locations via environment variables in `docker-compose.yml`:
 

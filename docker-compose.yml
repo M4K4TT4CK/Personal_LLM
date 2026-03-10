@@ -1,0 +1,14 @@
+services:
+  openclaw:
+    build: .
+    ports:
+      - "18789:18789"
+    volumes:
+      - openclaw-data:/data
+    environment:
+      - OPENCLAW_STATE_DIR=/data/state
+      - OPENCLAW_CONFIG_PATH=/data/config/openclaw.json
+    restart: unless-stopped
+
+volumes:
+  openclaw-data:
